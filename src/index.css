@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+  @apply font-sans;
+}
+
+/* src/index.css */
+.ProseMirror {
+  color: #fff;
+}
+
+.ProseMirror p {
+  margin: 0;
+}
+.dark-input::placeholder {
+  color: #ccc !important;
+}
+
+.dark-input input {
+  color: #fff !important;
+  background-color: #1f2937 !important;
+}
+
+.dark-input input:focus {
+  border-color: #475569 !important; /* slate-600 */
+  box-shadow: none !important;
+}
+.dark-input input::placeholder {
+  color: #ccc !important; /* light gray for visibility */
+}
+
+/* Also ensure input text stays white */
+.dark-input input {
+  color: #fff !important;
+  background-color: #1f2937 !important; /* dark background */
+  border-color: #334155 !important; /* slate border */
+}
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

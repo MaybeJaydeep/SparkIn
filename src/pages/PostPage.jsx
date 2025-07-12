@@ -1,5 +1,6 @@
 // src/pages/PostPage.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -14,43 +15,30 @@ const getReadingTime = (text) => {
 };
 
 export default function PostPage() {
-  const post = {
-    title: "Dark Mode Design in React",
-    date: "July 5, 2025",
-    author: {
-      name: "Jaydeep Badal",
-      bio: "Professional web developer, gamer, and data science enthusiast.",
-      avatar:
-        "https://avatars.githubusercontent.com/u/0000000?v=4", // Replace with your avatar URL
-    },
-    cover:
-      "https://source.unsplash.com/random/1200x400/?code,dark,design", // Replace with your image URL
-    content: `
-# Dark Mode Design in React
+  const { slug } = useParams();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-Designing for dark mode is easier than ever with Tailwind CSS and React!
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/posts/slug/${slug}`);
+        if (!res.ok) throw new Error("Post not found");
+        const data = await res.json();
+        setPost(data);
+      } catch (err) {
+        console.error(err);
+        setPost(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-\`\`\`js
-export default function Example() {
-  return <div className="dark:bg-gray-900">Hello World</div>;
-}
-\`\`\`
+    fetchPost();
+  }, [slug]);
 
-## Tips
-
-- Use Tailwind's \`dark:\` variants.
-- Test your colors for contrast.
-- Provide a toggle for users.
-
-## Conclusion
-
-Dark mode design is no longer hard!
-    `,
-    related: [
-      { title: "Getting Started with Tailwind CSS", slug: "/post/tailwind-start" },
-      { title: "Building Beautiful Forms", slug: "/post/forms" },
-    ],
-  };
+  if (loading) return <p className="text-white">Loading...</p>;
+  if (!post) return <p className="text-white">Post not found.</p>;
 
   const readingTime = getReadingTime(post.content);
 
@@ -58,7 +46,7 @@ Dark mode design is no longer hard!
     <div className="max-w-4xl mx-auto p-6">
       {/* Cover image */}
       <img
-        src={post.cover}
+        src={post.cover || "https://source.unsplash.com/random/1200x400/?code,dark,design"}
         alt={post.title}
         className="w-full h-64 object-cover rounded-lg mb-6"
       />
@@ -68,7 +56,7 @@ Dark mode design is no longer hard!
         <header className="mb-6">
           <h1 className="text-4xl font-bold text-white mb-2">{post.title}</h1>
           <p className="text-gray-400 text-sm">
-            {post.date} • {readingTime} • By {post.author.name}
+            {new Date(post.createdAt).toLocaleDateString()} • {readingTime} • By {post.author || "Unknown Author"}
           </p>
         </header>
 
@@ -85,27 +73,23 @@ Dark mode design is no longer hard!
         {/* Author bio */}
         <div className="flex items-center space-x-4 p-4 rounded-lg bg-gray-800">
           <img
-            src={post.author.avatar}
-            alt={post.author.name}
+            src={post.authorAvatar || "https://avatars.githubusercontent.com/u/0000000?v=4"}
+            alt={post.author || "Author"}
             className="w-14 h-14 rounded-full"
           />
           <div>
-            <h3 className="text-lg text-white font-semibold">{post.author.name}</h3>
-            <p className="text-gray-400 text-sm">{post.author.bio}</p>
+            <h3 className="text-lg text-white font-semibold">{post.author || "Unknown Author"}</h3>
+            <p className="text-gray-400 text-sm">{post.authorBio || "Professional web developer, gamer, and data science enthusiast."}</p>
           </div>
         </div>
 
-        {/* Related posts */}
+        {/* Related posts placeholder */}
         <div className="mt-10">
           <h2 className="text-xl text-white font-semibold mb-4">Related Posts</h2>
           <ul className="space-y-2">
-            {post.related.map((rel) => (
-              <li key={rel.slug}>
-                <a href={rel.slug} className="text-primary-400 hover:underline">
-                  {rel.title}
-                </a>
-              </li>
-            ))}
+            <li>
+              <a href="#" className="text-primary-400 hover:underline">Coming soon...</a>
+            </li>
           </ul>
         </div>
       </article>

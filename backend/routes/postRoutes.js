@@ -4,7 +4,7 @@ import Post from '../models/Post.js';
 
 const router = express.Router();
 
-// @desc   Get all posts
+// ✅ GET all posts
 router.get('/', async (req, res) => {
   try {
     const posts = await Post.find().sort({ createdAt: -1 });
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @desc   Create new post
+// ✅ CREATE new post
 router.post('/', async (req, res) => {
   const { title, content, tags, author } = req.body;
 
@@ -33,10 +33,10 @@ router.post('/', async (req, res) => {
   }
 });
 
-// @desc   Get single post by ID
-router.get('/:id', async (req, res) => {
+// ✅ GET single post by slug
+router.get('/slug/:slug', async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findOne({ slug: req.params.slug });
     if (post) {
       res.json(post);
     } else {
@@ -47,18 +47,26 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// @desc   Update post by ID
-router.put('/:id', async (req, res) => {
+// ✅ UPDATE post by slug
+router.put('/:slug', async (req, res) => {
   const { title, content, tags, author } = req.body;
 
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findOne({ slug: req.params.slug });
 
     if (post) {
       post.title = title || post.title;
       post.content = content || post.content;
       post.tags = tags || post.tags;
       post.author = author || post.author;
+
+      // ✅ Regenerate slug if title changed
+      if (title && title !== post.title) {
+        post.slug = title
+          .toLowerCase()
+          .replace(/ /g, '-')
+          .replace(/[^\w-]+/g, '');
+      }
 
       const updatedPost = await post.save();
       res.json(updatedPost);
@@ -70,13 +78,13 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// @desc   Delete post by ID
-router.delete('/:id', async (req, res) => {
+// ✅ DELETE post by slug
+router.delete('/:slug', async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findOne({ slug: req.params.slug });
 
     if (post) {
-      await post.remove();
+      await post.deleteOne();
       res.json({ message: 'Post deleted' });
     } else {
       res.status(404).json({ message: 'Post not found' });

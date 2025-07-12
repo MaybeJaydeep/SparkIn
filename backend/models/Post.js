@@ -1,13 +1,18 @@
+// backend/models/Post.js
 import mongoose from 'mongoose';
 
 const postSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     content: { type: String, required: true },
-    author: { type: String, required: true },
-    tags: [String],
+    tags: [{ type: String }],
+    author: { type: String, default: 'Anonymous' },
   },
-  { timestamps: true }
+  {
+    timestamps: true, // createdAt, updatedAt
+  }
 );
 
-export default mongoose.model('Post', postSchema);
+const Post = mongoose.model('Post', postSchema);
+
+export default Post;

@@ -1,7 +1,8 @@
 // src/pages/Home.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '@/api'; // Make sure you have src/api.js set up!
 
-const samplePosts = [
+const fallbackPosts = [
   {
     id: 1,
     title: 'Welcome to SparkIn!',
@@ -20,9 +21,23 @@ const samplePosts = [
 ];
 
 export default function Home() {
+  const [posts, setPosts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredPosts = samplePosts.filter((post) =>
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await api.get('/posts');
+        setPosts(res.data.length > 0 ? res.data : fallbackPosts);
+      } catch (err) {
+        console.error(err);
+        setPosts(fallbackPosts); // fallback if error
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -43,7 +58,7 @@ export default function Home() {
         <input
           type="text"
           placeholder="Search posts..."
-          className="w-full max-w-md rounded border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          className="w-full max-w-md rounded border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -54,18 +69,20 @@ export default function Home() {
         {filteredPosts.length > 0 ? (
           filteredPosts.map((post) => (
             <div
-              key={post.id}
-              className="rounded-lg border border-gray-200 bg-white p-6 shadow hover:shadow-md transition-all"
+              key={post._id || post.id}
+              className="rounded-lg border border-gray-700 bg-gray-900 p-6 shadow hover:shadow-lg transition-all"
             >
-              <h2 className="mb-2 text-xl text-black font-semibold">{post.title}</h2>
-              <p className="text-gray-600">{post.description}</p>
+              <h2 className="mb-2 text-xl font-semibold text-white">{post.title}</h2>
+              <p className="text-gray-400">
+                {post.description || post.content?.slice(0, 150)}
+              </p>
               <button className="mt-4 inline-block rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
                 Read More
               </button>
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500">No posts found.</p>
+          <p className="text-center text-gray-400">No posts found.</p>
         )}
       </div>
     </div>

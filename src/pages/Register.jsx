@@ -2,16 +2,19 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "@/context/AuthContext";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Register() {
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
-  const [email, setEmail]     = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError]     = useState('');
-  const [userCount, setUserCount] = useState(0);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [userCount, setUserCount] = useState(null);
 
   useEffect(() => {
     const fetchUserCount = async () => {
@@ -19,7 +22,8 @@ export default function Register() {
         const res = await axios.get('/api/auth/count');
         setUserCount(res.data.count);
       } catch (err) {
-        console.error("Error fetching user count:", err);
+        console.error("[Register.jsx] Error fetching user count:", err);
+        setUserCount(null);
       }
     };
 
@@ -27,14 +31,26 @@ export default function Register() {
   }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  setError('');
+  setLoading(true);
+  try {
     const res = await register(username, email, password);
     if (res.success) {
+      toast.success("✅ Account created! Redirecting to login...");
       navigate('/login');
     } else {
-      setError(res.message);
+      toast.error(res.message || "Registration failed.");
+      setError(res.message || "Registration failed.");
     }
-  };
+  } catch (err) {
+    console.error("[Register.jsx] Register error:", err);
+    toast.error("Something went wrong. Please try again.");
+    setError("Something went wrong. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black text-white relative overflow-hidden">
@@ -107,9 +123,25 @@ export default function Register() {
 
           <button
             type="submit"
-            className="w-full py-3 bg-primary-600 hover:bg-primary-700 rounded-md font-medium transition"
+            disabled={loading}
+            className={`w-full py-3 bg-primary-600 hover:bg-primary-700 rounded-md font-medium transition flex justify-center items-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            Create Account
+            {loading ? (
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12" cy="12" r="10"
+                  stroke="currentColor" strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8z"
+                ></path>
+              </svg>
+            ) : (
+              "Create Account"
+            )}
           </button>
 
           <p className="text-center text-sm text-gray-400 mt-4">
@@ -122,7 +154,11 @@ export default function Register() {
       </div>
 
       <div className="z-10 mt-8 text-xs text-gray-400">
-        Join over <span className="font-bold text-white">{userCount.toLocaleString()}</span> global users ✨
+          Join over{" "}
+          <span className="font-bold text-white">
+            {typeof userCount === 'number' ? userCount.toLocaleString() : "many"}
+          </span>{" "}
+          global users ✨
       </div>
     </section>
   );

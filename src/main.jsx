@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './index.css'; // Tailwind imported here
+import 'antd/dist/reset.css';
 import { AuthProvider } from './context/AuthContext';
 
 if (localStorage.theme === 'dark') {

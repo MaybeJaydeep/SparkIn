@@ -5,23 +5,29 @@ import axios from 'axios';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() =>
-    JSON.parse(localStorage.getItem('user')) || null
-  );
-  const [token, setToken] = useState(() =>
-    localStorage.getItem('token') || null
-  );
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (err) {
+      console.warn('[AuthContext] Failed to parse user:', err);
+      localStorage.removeItem('user');
+      return null;
+    }
+  });
+
+  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
 
   const login = async (email, password) => {
     try {
       const res = await axios.post('/api/auth/login', { email, password });
-      setUser(res.data.user);
+      setUser(res.data);
       setToken(res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      localStorage.setItem('user', JSON.stringify(res.data));
       localStorage.setItem('token', res.data.token);
       return { success: true };
     } catch (err) {
-      console.error(err.response?.data?.message || err.message);
+      console.error('[AuthContext] Login failed:', err.response?.data?.message || err.message);
       return { success: false, message: err.response?.data?.message || 'Login failed' };
     }
   };
@@ -29,13 +35,13 @@ export const AuthProvider = ({ children }) => {
   const register = async (username, email, password) => {
     try {
       const res = await axios.post('/api/auth/register', { username, email, password });
-      setUser(res.data.user);
+      setUser(res.data);
       setToken(res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      localStorage.setItem('user', JSON.stringify(res.data));
       localStorage.setItem('token', res.data.token);
       return { success: true };
     } catch (err) {
-      console.error(err.response?.data?.message || err.message);
+      console.error('[AuthContext] Registration failed:', err.response?.data?.message || err.message);
       return { success: false, message: err.response?.data?.message || 'Registration failed' };
     }
   };

@@ -11,10 +11,14 @@ import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import { ToastContainer } from "react-toastify";
+import { AuthProvider } from "@/context/AuthContext";
 
 
 export default function App() {
   return (
+    <>
+    <AuthProvider>
       <Routes>
         {/* Auth routes without sidebar */}
         <Route path="/login" element={<Login />} />
@@ -31,5 +35,8 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
+      </AuthProvider>
+      </>
   );
 }

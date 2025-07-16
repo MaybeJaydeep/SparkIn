@@ -1,5 +1,5 @@
 // src/components/AppLayout.jsx
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Layout, Menu } from 'antd';
 import {
   HomeOutlined,
@@ -9,11 +9,13 @@ import {
   DashboardOutlined,
 } from '@ant-design/icons';
 import { Link, Outlet } from 'react-router-dom';
+import { AuthContext } from '@/context/AuthContext';
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const AppLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const { user } = useContext(AuthContext);
 
   const items = [
     {
@@ -29,12 +31,16 @@ const AppLayout = () => {
     {
       key: '/author',
       icon: <UserOutlined />,
-      label: <Link to="/author/username">Author Profile</Link>,
+      label: user ? (
+        <Link to={`/author/${user.username}`}>Author Profile</Link>
+      ) : (
+        'Author Profile'
+      ),
     },
     {
-      key: '/edit',
+      key: '/profile/edit',
       icon: <EditOutlined />,
-      label: <Link to="/edit/slug">Edit Post</Link>,
+      label: <Link to={`/profile/${user?.username}/edit`}>Edit Profile</Link>,
     },
     {
       key: '/admin',
@@ -67,13 +73,14 @@ const AppLayout = () => {
           className="!bg-gray-900 text-white flex items-center justify-between px-6"
           style={{ height: '64px' }}
         >
+          {/* Add your header content if needed */}
         </Header>
-        <Content className="bg-gray-900 text-white" >
+        <Content className="bg-gray-900 text-white">
           <div className="bg-gray-800 text-white p-6 rounded-lg min-h-[90vh]">
             <Outlet />
           </div>
         </Content>
-        <Footer className="text-center !bg-gray-900 text-gray-400" style={{ color: '#fff' }}>
+        <Footer className="text-center !bg-gray-900 text-gray-400">
           SparkIn ©{new Date().getFullYear()} Created by Jaydeep
         </Footer>
       </Layout>

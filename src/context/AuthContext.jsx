@@ -1,5 +1,5 @@
 // src/context/AuthContext.jsx
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 
 export const AuthContext = createContext();
@@ -18,6 +18,18 @@ export const AuthProvider = ({ children }) => {
 
   const [token, setToken] = useState(() => localStorage.getItem('token') || null);
 
+  const axiosAuth = axios.create();
+
+  axiosAuth.interceptors.request.use(
+    (config) => {
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
   const login = async (email, password) => {
     try {
       const res = await axios.post('/api/auth/login', { email, password });
@@ -32,9 +44,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (username, email, password) => {
+  const register = async (username, email, password, role = 'user') => {
     try {
-      const res = await axios.post('/api/auth/register', { username, email, password });
+      const res = await axios.post('/api/auth/register', { username, email, password ,role });
       setUser(res.data);
       setToken(res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data));
@@ -54,8 +66,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, login, register, logout, axiosAuth }}>
       {children}
     </AuthContext.Provider>
   );
+};
+
+// ✅ Add this at the end:
+export const useAuth = () => {
+  return useContext(AuthContext);
 };

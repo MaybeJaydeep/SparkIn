@@ -6,13 +6,13 @@ import Home from './pages/Home';
 import PostPage from './pages/PostPage';
 import AuthorProfile from './pages/AuthorProfile';
 import NewPost from './pages/NewPost';
-import EditPost from './pages/EditPost';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "@/context/AuthContext";
+import EditProfile from './pages/EditProfile';
 
 
 export default function App() {
@@ -29,8 +29,8 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="post/:slug" element={<PostPage />} />
           <Route path="author/:username" element={<AuthorProfile />} />
+          <Route path="profile/:username/edit" element={<EditProfile />} />
           <Route path="new" element={<NewPost />} />
-          <Route path="edit/:slug" element={<EditPost />} />
           <Route path="admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Route>

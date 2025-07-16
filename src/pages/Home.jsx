@@ -1,24 +1,7 @@
 // src/pages/Home.jsx
 import React, { useEffect, useState } from 'react';
-import api from '@/api'; // Make sure you have src/api.js set up!
-
-const fallbackPosts = [
-  {
-    id: 1,
-    title: 'Welcome to SparkIn!',
-    description: 'This is your first sample post. Start sharing your thoughts!',
-  },
-  {
-    id: 2,
-    title: 'Build with React & Ant Design',
-    description: 'Combine modern UI libraries to make your blog shine!',
-  },
-  {
-    id: 3,
-    title: 'Responsive Layout Ready',
-    description: 'Your sidebar collapses on mobile. Try resizing the screen!',
-  },
-];
+import { Link } from 'react-router-dom';
+import api from '@/api';
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -28,10 +11,10 @@ export default function Home() {
     const fetchPosts = async () => {
       try {
         const res = await api.get('/posts');
-        setPosts(res.data.length > 0 ? res.data : fallbackPosts);
+        setPosts(res.data);
       } catch (err) {
-        console.error(err);
-        setPosts(fallbackPosts); // fallback if error
+        console.error("Failed to load posts:", err);
+        setPosts([]); // Don't use fallback mockups anymore
       }
     };
     fetchPosts();
@@ -68,18 +51,19 @@ export default function Home() {
       <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {filteredPosts.length > 0 ? (
           filteredPosts.map((post) => (
-            <div
-              key={post._id || post.id}
-              className="rounded-lg border border-gray-700 bg-gray-900 p-6 shadow hover:shadow-lg transition-all"
+            <Link
+              to={`/post/${post.slug}`}
+              key={post._id}
+              className="rounded-lg border border-gray-700 bg-gray-900 p-6 shadow hover:shadow-lg transition-all hover:border-blue-600"
             >
               <h2 className="mb-2 text-xl font-semibold text-white">{post.title}</h2>
               <p className="text-gray-400">
-                {post.description || post.content?.slice(0, 150)}
+                {post.description || post.content?.slice(0, 150) + '...'}
               </p>
-              <button className="mt-4 inline-block rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-                Read More
-              </button>
-            </div>
+              <span className="mt-4 inline-block text-sm text-blue-400 hover:underline">
+                Read More →
+              </span>
+            </Link>
           ))
         ) : (
           <p className="text-center text-gray-400">No posts found.</p>

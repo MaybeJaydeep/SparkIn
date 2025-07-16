@@ -15,6 +15,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [userCount, setUserCount] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const fetchUserCount = async () => {
@@ -35,7 +36,7 @@ export default function Register() {
   setError('');
   setLoading(true);
   try {
-    const res = await register(username, email, password);
+    const res = await register(username, email, password ,isAdmin ? 'admin' : 'user');
     if (res.success) {
       toast.success("✅ Account created! Redirecting to login...");
       navigate('/login');
@@ -120,6 +121,18 @@ export default function Register() {
               className="w-full p-3 rounded-md bg-gray-800/50 border border-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="isAdmin"
+              checked={isAdmin}
+              onChange={(e) => setIsAdmin(e.target.checked)}
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-600 rounded bg-gray-700"
+            />
+  <label htmlFor="isAdmin" className="text-sm text-gray-300">
+    Register as Admin
+  </label>
+</div>
 
           <button
             type="submit"

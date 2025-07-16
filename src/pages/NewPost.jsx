@@ -1,5 +1,7 @@
 // src/pages/NewPost.jsx
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "@/context/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -8,22 +10,16 @@ import remarkGfm from "remark-gfm";
 import "highlight.js/styles/github-dark.css";
 
 export default function NewPost() {
+  const { user, axiosAuth } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
   const [content, setContent] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log({
-      title,
-      tags,
-      content,
-    });
-  };
-
-  // Split content: normal text + markdown blocks
+  // 🧠 Parse content into blocks
   const parseContent = (text) => {
-    const regex = /\*\*\+(.*?)\+\*\*/gs;
+    const regex = /\*\*\+(.*?)\+\*\*/gs; // match **+ markdown +**
     const blocks = [];
     let lastIndex = 0;
     let match;
@@ -49,14 +45,41 @@ export default function NewPost() {
       });
     }
 
-    return blocks.filter(block => block.content.length > 0);
+    return blocks.filter((block) => block.content.length > 0);
   };
 
   const blocks = parseContent(content);
 
+  // 🚀 Submit handler
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!user) {
+    alert("You must be logged in to create a post.");
+    return;
+  }
+
+  try {
+    const res = await axiosAuth.post("/api/posts", {
+      title,
+      tags: tags.split(",").map((t) => t.trim()),
+      content,
+    });
+
+    alert("Post created successfully!");
+    console.log("[NewPost] Created:", res.data);
+    setTitle("");
+    setTags("");
+    setContent("");
+  } catch (err) {
+    console.error("[NewPost] Failed:", err);
+    alert("Failed to create post.");
+  }
+};
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4 text-white">Create New Post ⚡</h1>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <Label htmlFor="title" className="text-white">Title</Label>
@@ -65,7 +88,7 @@ export default function NewPost() {
             placeholder="Your post title..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+            className="bg-gray-800 border-gray-700 text-white"
           />
         </div>
 
@@ -76,21 +99,21 @@ export default function NewPost() {
             placeholder="e.g. react, javascript"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
-            className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+            className="bg-gray-800 border-gray-700 text-white"
           />
         </div>
 
         <div>
           <Label htmlFor="content" className="text-white">
-            Content (write normally, use <code>**+ markdown +**</code> for Markdown blocks)
+            Content (wrap markdown blocks with <code>**+ +**</code>)
           </Label>
           <textarea
             id="content"
             rows={10}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Write your content here. For Markdown blocks, use **+ your markdown +**"
-            className="w-full bg-gray-800 border border-gray-700 rounded-md p-3 text-white placeholder-gray-400"
+            placeholder="Write your post content here. For Markdown blocks, wrap in **+ markdown +**"
+            className="w-full bg-gray-800 border border-gray-700 rounded-md p-3 text-white"
           />
         </div>
 
@@ -105,10 +128,8 @@ export default function NewPost() {
           <p className="text-gray-400">Start typing to see the preview...</p>
         ) : (
           blocks.map((block, idx) =>
-            block.type === 'text' ? (
-              <p key={idx} className="mb-4 text-gray-300">
-                {block.content}
-              </p>
+            block.type === "text" ? (
+              <p key={idx} className="mb-4 text-gray-300">{block.content}</p>
             ) : (
               <div
                 key={idx}

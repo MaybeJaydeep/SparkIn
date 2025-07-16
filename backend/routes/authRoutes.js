@@ -8,7 +8,7 @@ const router = express.Router();
 
 // ✅ REGISTER
 router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password ,role} = req.body;
 
   try {
     // Check if user already exists
@@ -22,6 +22,7 @@ router.post('/register', async (req, res) => {
       username,
       email,
       password, // raw, gets hashed by the pre-save hook
+      role: role === 'admin' ? 'admin' : 'user', // safety check
     });
 
     await user.save();
@@ -33,6 +34,7 @@ router.post('/register', async (req, res) => {
       _id: user._id,
       username: user.username,
       email: user.email,
+      role: user.role,
       token,
     });
   } catch (err) {

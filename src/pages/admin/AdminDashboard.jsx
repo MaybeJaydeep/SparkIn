@@ -53,7 +53,7 @@ export default function AdminDashboard() {
     if (!window.confirm("Are you sure you want to delete this post? This action cannot be undone.")) return;
 
     try {
-      await api.delete(`/admin/posts/${slug}`);
+      await api.delete(`/admin/posts/slug/${slug}`);
       setPosts(posts.filter(post => post.slug !== slug));
       alert("Post deleted successfully");
     } catch (err) {
@@ -66,7 +66,7 @@ export default function AdminDashboard() {
     if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
 
     try {
-      await api.delete(`/admin/us}`);
+      await api.delete(`/admin/users/${userId}`);
       setUsers(users.filter(user => user._id !== userId));
       alert("User deleted successfully");
     } catch (err) {
@@ -110,8 +110,8 @@ export default function AdminDashboard() {
       <div className="flex border-b border-gray-700 mb-6">
         <button
           className={`px-4 py-2 font-medium ${activeTab === 'posts'
-              ? 'text-blue-400 border-b-2 border-blue-400'
-              : 'text-gray-400 hover:text-gray-300'
+            ? 'text-blue-400 border-b-2 border-blue-400'
+            : 'text-gray-400 hover:text-gray-300'
             }`}
           onClick={() => setActiveTab('posts')}
         >
@@ -119,8 +119,8 @@ export default function AdminDashboard() {
         </button>
         <button
           className={`px-4 py-2 font-medium ${activeTab === 'users'
-              ? 'text-blue-400 border-b-2 border-blue-400'
-              : 'text-gray-400 hover:text-gray-300'
+            ? 'text-blue-400 border-b-2 border-blue-400'
+            : 'text-gray-400 hover:text-gray-300'
             }`}
           onClick={() => setActiveTab('users')}
         >
@@ -279,8 +279,8 @@ export default function AdminDashboard() {
                         <td className="p-4 text-gray-300">{user.email}</td>
                         <td className="p-4">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin'
-                              ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                              : 'bg-green-500/20 text-green-300 border border-green-500/30'
+                            ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                            : 'bg-green-500/20 text-green-300 border border-green-500/30'
                             }`}>
                             {user.role}
                           </span>
@@ -299,9 +299,9 @@ export default function AdminDashboard() {
                             </Link>
                             <button
                               onClick={() => handleDeleteUser(user._id)}
-                              className="p-2 bg-red-600/30 hover:bg-red-600/50 text-red-300 rounded-lg transition-colors"
+                              className={`p-2 bg-red-600/30 hover:bg-red-600/50 text-red-300 rounded-lg transition-colors ${user.role === 'admin' ? 'opacity-50 cursor-not-allowed' : ''}`}
                               title="Delete User"
-                              disabled={user._id === user._id} // Prevent deleting yourself
+                              disabled={user.role === 'admin'} // Prevent deleting admin users
                             >
                               <TrashIcon className="w-4 h-4" />
                             </button>

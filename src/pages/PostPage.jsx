@@ -55,7 +55,6 @@ export default function PostPage() {
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
-  const [bookmarks, setBookmarks] = useState([]);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -70,9 +69,14 @@ export default function PostPage() {
 
         // Check if user has bookmarked this post
         if (user) {
-          const bookmarksRes = await api.get(`/users/${user.username}/bookmarks`);
-          setBookmarks(bookmarksRes.data || []);
-          setIsBookmarked(bookmarksRes.data.some(bookmark => bookmark.post === res.data._id));
+          try {
+            const bookmarksRes = await api.get(`/users/${user.username}/bookmarks`);
+            const userBookmarks = bookmarksRes.data || [];
+            setIsBookmarked(userBookmarks.some(bookmark => bookmark.post === res.data._id));
+          } catch (err) {
+            console.error("Failed to fetch bookmarks:", err);
+            // Continue without bookmarks data
+          }
         }
       } catch (err) {
         console.error(err);
@@ -598,7 +602,7 @@ export default function PostPage() {
       )}
 
       {/* Add keyframes for floating animation */}
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }

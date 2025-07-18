@@ -34,7 +34,7 @@ const stringToColor = (str) => {
 };
 
 // Generate placeholder image with gradient
-const generatePlaceholderImage = (id, title) => {
+const generatePlaceholderImage = (id) => {
   const color1 = stringToColor(id || '1');
   const color2 = stringToColor((id || '1') + 'alt');
   return `linear-gradient(135deg, ${color1}, ${color2})`;
@@ -217,8 +217,8 @@ export default function Home() {
             <button
               onClick={() => setActiveCategory('all')}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === 'all'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-800/70 text-gray-300 hover:bg-gray-700'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800/70 text-gray-300 hover:bg-gray-700'
                 }`}
             >
               All Posts
@@ -229,8 +229,8 @@ export default function Home() {
                 key={tag}
                 onClick={() => setActiveCategory(tag)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === tag
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-800/70 text-gray-300 hover:bg-gray-700'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-800/70 text-gray-300 hover:bg-gray-700'
                   }`}
               >
                 {tag}
@@ -264,7 +264,7 @@ export default function Home() {
                     <div
                       className="w-full h-full bg-cover bg-center"
                       style={{
-                        background: generatePlaceholderImage(posts[0]._id, posts[0].title)
+                        background: generatePlaceholderImage(posts[0]._id)
                       }}
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -347,7 +347,7 @@ export default function Home() {
                     <div
                       className="w-full h-full bg-cover bg-center"
                       style={{
-                        background: generatePlaceholderImage(post._id, post.title)
+                        background: generatePlaceholderImage(post._id)
                       }}
                     >
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -493,7 +493,7 @@ export default function Home() {
       </div>
 
       {/* Add keyframes for floating animation */}
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }

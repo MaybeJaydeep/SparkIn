@@ -5,6 +5,7 @@ import postRoutes from './routes/postRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import commentRoutes from './routes/commentRoutes.js';
 import cors from 'cors';
 
 
@@ -34,6 +35,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/comments', commentRoutes);
 
 const PORT = process.env.PORT || 5000;
 

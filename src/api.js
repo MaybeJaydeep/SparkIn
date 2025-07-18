@@ -1,8 +1,9 @@
-// src/api/api.js
+// src/api.js
 import axios from 'axios';
 
+// Use relative URL since we have proxy configured in vite.config.js
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: '/api',
 });
 
 api.interceptors.request.use(

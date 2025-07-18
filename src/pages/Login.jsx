@@ -174,7 +174,7 @@ export default function Login() {
       </p>
 
       {/* Add keyframes for floating animation */}
-      <style jsx="true">{`
+      <style>{`
         @keyframes float {
           0% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }

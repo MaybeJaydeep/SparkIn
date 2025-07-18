@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './index.css'; // Tailwind imported here
 import 'antd/dist/reset.css';
-import { AuthProvider } from './context/AuthContext';
+import 'react-toastify/dist/ReactToastify.css';
 
 if (localStorage.theme === 'dark') {
   document.documentElement.classList.add('dark');

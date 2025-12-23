@@ -61,15 +61,15 @@ npm install
 5. Start the development servers
 
 Frontend:
-```bash
+
 npm run dev
-```
+
 
 Backend:
-```bash
+
 cd backend
+
 npm run dev
-```
 
 ## Project Structure
 

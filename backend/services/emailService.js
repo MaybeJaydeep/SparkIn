@@ -2,33 +2,36 @@
 import nodemailer from 'nodemailer';
 
 // Create transporter
-const createTransporter = () => {
+const createTransporter = async () => {
   if (process.env.NODE_ENV === 'production') {
-    // Production email service (e.g., SendGrid, Mailgun)
-    return nodemailer.createTransporter({
-      service: 'gmail',
+    // Production email service (e.g., Gmail, SendGrid, Mailgun)
+    return nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE || 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
     });
-  } else {
-    // Development - use Ethereal Email for testing
-    return nodemailer.createTransporter({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      auth: {
-        user: 'ethereal.user@ethereal.email',
-        pass: 'ethereal.pass',
-      },
-    });
   }
+
+  // Development - use Ethereal Email for testing (no real emails sent)
+  const testAccount = await nodemailer.createTestAccount();
+
+  return nodemailer.createTransport({
+    host: 'smtp.ethereal.email',
+    port: 587,
+    secure: false,
+    auth: {
+      user: testAccount.user,
+      pass: testAccount.pass,
+    },
+  });
 };
 
 // Send email verification
 export const sendVerificationEmail = async (user, token) => {
   try {
-    const transporter = createTransporter();
+    const transporter = await createTransporter();
 
     const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
 
@@ -93,7 +96,7 @@ export const sendVerificationEmail = async (user, token) => {
 // Send password reset email
 export const sendPasswordResetEmail = async (user, token) => {
   try {
-    const transporter = createTransporter();
+    const transporter = await createTransporter();
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 

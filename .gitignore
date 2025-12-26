@@ -1,6 +1,18 @@
+# Dependencies
 node_modules
 dist
+dist-ssr
+
+# Environment variables (NEVER commit these!)
 .env
+.env.local
+.env.production
+.env.development
+.env.*.local
+backend/.env
+backend/.env.local
+backend/.env.production
+backend/.env.development
 
 # Logs
 logs
@@ -11,9 +23,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Local files
 *.local
 
 # Editor directories and files

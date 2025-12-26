@@ -22,7 +22,9 @@ NODE_ENV=production
 PORT=5000
 
 # MongoDB Atlas connection string
-MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/sparkin?retryWrites=true&w=majority
+# Format: mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority
+# Get this from MongoDB Atlas dashboard → Connect → Connect your application
+MONGO_URI=mongodb+srv://YOUR_USERNAME:YOUR_PASSWORD@YOUR_CLUSTER.mongodb.net/sparkin?retryWrites=true&w=majority
 
 # Generate a secure JWT secret (32+ characters)
 # Run: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"

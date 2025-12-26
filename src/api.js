@@ -1,9 +1,11 @@
 // src/api.js
 import axios from 'axios';
 
-// Use relative URL since we have proxy configured in vite.config.js
+// Use environment variable for API URL, fallback to relative URL for dev (Vite proxy)
+const API_URL = import.meta.env.VITE_API_URL || '/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_URL,
 });
 
 api.interceptors.request.use(

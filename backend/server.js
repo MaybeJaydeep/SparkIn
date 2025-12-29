@@ -50,9 +50,13 @@ app.use(limiter);
 // Parse incoming JSON
 app.use(express.json({ limit: '1mb' }));
 
-// Simple health check route
+// Health check route
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: '✅ SparkIn API is running...' });
+  res.json({ 
+    status: 'ok', 
+    message: '✅ SparkIn API is running...',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Mount your routes
